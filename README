@@ -1,0 +1,4 @@
+Hi there!
+
+This is a temporary workspace for creating an XML Schema for MediaMosa XML output. It's based on work done in the past in a local setting, now with the goal to give MediaMosa proper XML Schema support for validation, code generation and documentation.
+
