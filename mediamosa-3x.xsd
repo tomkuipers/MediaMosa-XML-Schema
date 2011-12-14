@@ -1,0 +1,883 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+
+    <!-- targetNamespace="http://mediamosa.org/schemas/3.0" -->
+    <xs:annotation>
+        <xs:documentation>
+            Draft version of XML Schema for MediaMosa 3.x example output, Tom Kuipers 
+            Make this available online at http://mediamosa.org/schemas/3.0/mediamosa.xsd
+            - minOccurs = 0 means optional. Default is 1 - maxOccurs = number of occurences.
+            "unbounded" means as many occurences as wished. Default is 1
+        </xs:documentation>
+    </xs:annotation>
+    
+    <!-- <xs:import namespace="http://a9.com/-/spec/opensearch/1.1/" schemaLocation="opensearch.xsd"/> -->
+    <xs:import namespace="http://a9.com/-/spec/opensearch/1.1/" />
+    
+    <!-- root element -->
+    <xs:element name="response">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="header" type="HeaderType"/>
+                <xs:element name="items" type="ItemsType"/>
+            </xs:sequence>
+            <xs:attribute name="version" use="required" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- simple elements for re-use-->
+    <xs:element name="action" type="xs:anyURI"/>
+    <xs:element name="app_id">
+        <xs:simpleType>
+            <xs:restriction base="xs:int">
+                <xs:minInclusive value="1"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="app_quota_mb">
+        <xs:simpleType>
+            <xs:restriction base="xs:int">
+                <xs:minInclusive value="0"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="app_diskspace_used_mb">
+        <xs:simpleType>
+            <xs:restriction base="xs:int">
+                <xs:minInclusive value="0"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="asset_id" type="xs:token"/>
+    <xs:element name="build" type="xs:int"/>
+    <xs:element name="class" type="xs:string"/>
+    <xs:element name="code" type="xs:int"/>
+    <xs:element name="changed" type="xs:dateTime"/>
+    <xs:element name="created" type="xs:dateTime"/>
+    <xs:element name="content_type" type="xs:string"/><!-- string value? -->
+    <xs:element name="download_url" type="xs:anyURI"/>
+    <xs:element name="error_description" type="xs:string"/>
+    <xs:element name="group_id"/><!-- I assumed this would be a string (token) not an int, right? -->
+    <xs:element name="id" type="xs:int"/>
+    <xs:element name="info" type="xs:string"/>
+    <xs:element name="job_type">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <!-- what other jobtypes are there? -->
+                <xs:enumeration value="ANALYSE"></xs:enumeration>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="mediafile_duration" type="xs:time"/>
+    <xs:element name="mediafile_container_type" type="xs:string"/>
+    <xs:element name="message" type="xs:string"/>
+    <xs:element name="name" type="xs:string"/>
+    <xs:element name="oai_prefix" type="xs:string"/><!-- string value? -->
+    <xs:element name="oai_namespaceuri" type="xs:string"/><!-- string value or anyUri? -->
+    <xs:element name="oai_schemalocation" type="xs:string"/><!-- string value or anyUri? -->
+    <xs:element name="output" type="xs:string"/>
+    <xs:element name="owner" type="xs:string"/>
+    <xs:element name="owner_id" type="xs:string"/>
+    <xs:element name="play_proxy_url" type="xs:anyURI"/>
+    <xs:element name="play_restriction_start" type="xs:dateTime"/>
+    <xs:element name="play_restriction_end" type="xs:dateTime"/>
+    <xs:element name="played" type="xs:int"/><!-- restriction minInclusive 0, or just empty when never watched? -->
+    <xs:element name="priority" type="xs:int"/>
+    <xs:element name="progress" type="xs:float"/>
+    <xs:element name="progress_id" type="xs:int"/><!-- is there a maximun value for this, e.g. more than int maxinclusive 2147483647  -->
+    <xs:element name="provider_id"/><!-- don't know what to expect here, type/xs:restriction not specified, can be xs:string or xs:int -->
+    <xs:element name="quota_available_mb">
+        <xs:simpleType>
+            <xs:restriction base="xs:int">
+                <xs:minInclusive value="0"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="reference_id" type="xs:token"/><!-- not sure what to expect here, assumed a string value -->
+    <xs:element name="started" type="xs:dateTime"/>
+    <xs:element name="started_unix" type="xs:long"/>
+    <xs:element name="status">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <!-- what other statuses are there? -->
+                <xs:enumeration value="FINISHED"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="supplement_id" type="xs:token"/><!-- or token (xs:MNTOKEN) -->
+    <xs:element name="supplement_base64" type="xs:base64Binary"/>
+    <xs:element name="tag" type="xs:string"/><!-- not sure what to expect here, assumed a string value -->
+    <xs:element name="ticket_id" type="xs:token"/>
+    <xs:element name="uploadprogress_url" type="xs:anyURI"/>
+    <xs:element name="version" type="xs:string"/>
+    <xs:element name="videotimestamp" type="xs:dateTime"/>
+    <xs:element name="videotimestampmodified" type="xs:dateTime"/>
+    <xs:element name="view_asset_url" type="xs:anyURI"/>
+    <xs:element name="viewed" type="xs:int"/><!-- restriction minInclusive 0, or just empty when never watched? -->
+
+
+    <xs:complexType name="HeaderType">
+        <xs:sequence>
+            <xs:element name="request" type="RequestType"/>
+            <xs:element name="debug" type="DebugType"/><!-- is this always present? -->
+            <xs:element name="version" type="xs:string"/>
+            <!-- made this string because it also includes buildnumber and is not a decimal like the version attribute -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RequestType">
+        <xs:sequence>
+            <xs:element name="resultId">
+                <xs:simpleType>
+                    <xs:restriction base="xs:int"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="result">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="description">
+                <!-- don't know what to expect here, xs:restriction not specified -->
+            </xs:element>
+            <xs:element name="method">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <!-- possible values should be listed here -->
+                        <xs:enumeration value="GET"/>
+                        <xs:enumeration value="POST"/>
+                        <xs:enumeration value="PUT"/>
+                        <xs:enumeration value="DELETE"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="uri">
+                <xs:simpleType>
+                    <xs:restriction base="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="time">
+                <xs:simpleType>
+                    <xs:restriction base="xs:float"/>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DebugType">
+        <xs:sequence>
+            <xs:element ref="class"/>
+            <xs:element name="matched" type="MatchedType"/>
+            <xs:element name="errors">
+                <!-- don't know what to expect here, xs:restriction not specified -->
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MatchedType">
+        <xs:sequence>
+            <xs:element name="method">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <!-- possible values should be listed here -->
+                        <xs:enumeration value="GET"/>
+                        <xs:enumeration value="POST"/>
+                        <xs:enumeration value="PUT"/>
+                        <xs:enumeration value="DELETE"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="uri">
+                <xs:simpleType>
+                    <xs:restriction base="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ItemsType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <!-- the example XML uses 'asset' but this can be 'mediafile', 'user' etc.  -->
+            <xs:element name="asset" type="AssetType"/>
+            
+            <xs:element name="errorcode" type="ErrorcodeType"/>
+            
+            <xs:element name="version" type="VersionType"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- /acl/app [GET] -->
+    <xs:complexType name="AppType">
+        <xs:annotation>
+            <xs:documentation>
+                /acl/app [GET]
+                <![CDATA[
+                <item id="1">
+                    <app_id>3</app_id>
+                    <name>NIBG</name>
+                    <play_proxy_url>http://videotheek_5_.hiero.nl/play/{asset_id}/{mediafile_id}/{mediafile_filename}</play_proxy_url>
+                    <view_asset_url>http://videotheek_5_.hiero.nl/viewasset/{asset_id}</view_asset_url>
+                    <download_url>http://download_5_url/{asset_id}/{mediafile_id}/{mediafile_filename}</download_url>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="app_id"/>
+            <xs:element ref="name"/>
+            <xs:element ref="play_proxy_url"/>
+            <xs:element ref="view_asset_url"/>
+            <xs:element ref="download_url"/>
+        </xs:sequence>
+    
+    </xs:complexType>
+    
+    <!-- /app/quota [GET] -->
+    <xs:complexType name="AppQuotaType">
+        <xs:annotation>
+            <xs:documentation>
+                /app/quota [GET]
+                <![CDATA[
+                <item id="1">
+                    <app_quota_mb>153600</app_quota_mb>
+                    <app_diskspace_used_mb>2094</app_diskspace_used_mb>
+                    <quota_available_mb>151506</quota_available_mb>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="app_quota_mb"/>
+            <xs:element ref="app_diskspace_used_mb"/>
+            <xs:element ref="quota_available_mb"/>
+        </xs:sequence>
+        
+    </xs:complexType>
+    
+    <!-- /asset [GET] -->
+    <xs:complexType name="AssetType">
+        <xs:sequence>
+            <!-- didn't define 'asset_id' since we use an attribute for that -->
+            <xs:element ref="app_id"/>
+            <xs:element ref="provider_id"/>
+            <xs:element ref="owner_id"/>
+            <xs:element ref="group_id"/>
+            <xs:element ref="videotimestamp"/>
+            <xs:element ref="videotimestampmodified"/>
+            <xs:element ref="play_restriction_start"/>
+            <xs:element ref="play_restriction_end"/>
+            <xs:element ref="reference_id"/>
+            <!-- for element 'isprivate' the type is defined in this schema,
+                the 'type' attribute in the XML document is not needed.
+                Other boolean elements, like 'is_favorite' or 'is_external' have an underscore. 
+                To be consistent we should use it here also, or drop the 'is_' prefix completely. I would prefer that. 
+                It is an indictator for storing a boolean value, but that is already denifed in the schema -->
+            <xs:element name="private">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element ref="mediafile_duration"/>
+            <xs:element ref="mediafile_container_type"/>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="unappropriate">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- I assume element 'is_unappropiate' is in the example XML by mistake -->
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="external">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="empty_asset">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element ref="viewed"/>
+            <xs:element ref="played"/>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="protected">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="asset_property_is_hidden">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="favorite">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="granted">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="url_still_oai">
+                <xs:simpleType>
+                    <xs:restriction base="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="url_still">
+                <xs:simpleType>
+                    <xs:restriction base="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- see comments for element 'private', dropped 'has_' prefix -->
+            <xs:element name="streamable_mediafiles">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="metadata">
+                <xs:complexType>
+                    <xs:sequence>
+                        <!-- reference external xsd for czp:, dc:, qdc: namespaces -->
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="mediafiles">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="mediafile" type="MediafileType" minOccurs="0"
+                            maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <!-- when attribute 'id' is used, element 'asset_id' is superfluous -->
+        <xs:attribute name="id">
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <!-- /asset/$asset_id [GET] -->
+    <xs:complexType name="AssetDetailsType">
+        <xs:annotation>
+            <xs:documentation>
+                /asset/$asset_id [GET]
+                <![CDATA[
+                <item id="1">
+                    <asset_id>M9FyEFTVy0zFzpbOv7DaEH4U</asset_id>
+                    <app_id>4</app_id>
+                    <provider_id></provider_id>
+                    <owner_id>owner</owner_id>
+                    <group_id></group_id>
+                    <videotimestamp>2009-06-11 16:07:38</videotimestamp>
+                    <videotimestampmodified>2009-09-23 14:40:54</videotimestampmodified>
+                    <play_restriction_start></play_restriction_start>
+                    <play_restriction_end></play_restriction_end>
+                    <reference_id></reference_id>
+                    <isprivate>FALSE</isprivate>
+                    <mediafile_duration>00:00:45.7</mediafile_duration>
+                    <mediafile_container_type>asf</mediafile_container_type>
+                    <is_unappropiate>FALSE</is_unappropiate>
+                    <is_unappropriate>FALSE</is_unappropriate>
+                    <is_external>FALSE</is_external>
+                    <viewed>1631</viewed>
+                    <played>97</played>
+                    <is_empty_asset>FALSE</is_empty_asset>
+                    <is_protected>DOMAIN_REALM</is_protected>
+                    <has_streamable_mediafiles>FALSE</has_streamable_mediafiles>
+                    <dublin_core>
+                        <type></type>
+                        <format></format>
+                        <language>nl</language>
+                        <title>Test title</title>
+                        <creator></creator>
+                        <publisher></publisher>
+                        <subject></subject>
+                        <description>Test description</description>
+                        <contributor></contributor>
+                        <date></date>
+                        <identifier></identifier>
+                        <source></source>
+                        <relation></relation>
+                        <coverage_temporal></coverage_temporal>
+                        <coverage_spatial></coverage_spatial>
+                        <rights></rights>
+                    </dublin_core>
+                    <qualified_dublin_core>
+                        <title_alternative></title_alternative>
+                        <description_abstract></description_abstract>
+                        <created></created>
+                        <issued></issued>
+                        <hasformat></hasformat>
+                        <isformatof></isformatof>
+                        <format_medium></format_medium>
+                        <format_extent></format_extent>
+                        <license></license>
+                        <rightsholder></rightsholder>
+                        <isreferencedby></isreferencedby>
+                    </qualified_dublin_core>
+                    <czp>
+                        <schemanaam>http://your_wle/</schemanaam>
+                        <identificatiecode>http://your_wle/asset/M9FyEFTVy0zFzpbOv7DaEH4U</identificatiecode>
+                        <titel></titel>
+                        <taal></taal>
+                        <beschrijving></beschrijving>
+                        <sleutelwoord></sleutelwoord>
+                        <aggregatieniveau>niveau</aggregatieniveau>
+                        <versie>x</versie>
+                        <status>final</status>
+                        <soort_leermateriaal>Evaluatie- en toetsmateriaal</soort_leermateriaal>
+                        <beoogde_eindgebruiker>Auteur</beoogde_eindgebruiker>
+                        <context>VVE</context>
+                        <beoogde_leeftijdsgroep></beoogde_leeftijdsgroep>
+                        <kosten>nee</kosten>
+                        <auteursrechten>Ja</auteursrechten>
+                        <omschrijving_rechten>x</omschrijving_rechten>
+                        <classificatie>x</classificatie>
+                    </czp>
+                    <ega_view_url>http://your_ega_view_url/viewasset/M9FyEFTVy0zFzpbOv7DaEH4U</ega_view_url>
+                    <is_favorite>FALSE</is_favorite>
+                    <granted>TRUE</granted>
+                    <vpx_still_url>http://your_vpx/still/Em4fKZU6iiKuuWrgbcQ86vPR</vpx_still_url>
+                    <ega_still_url>http://your_still_url/M9FyEFTVy0zFzpbOv7DaEH4U</ega_still_url>
+                    <mediafiles>
+                        <mediafile id="1">
+                            <mediafile_id>9PIxRij3YGRgenkyjwOT7zyS</mediafile_id>
+                            <asset_id>M9FyEFTVy0zFzpbOv7DaEH4U</asset_id>
+                            <app_id>4</app_id>
+                            <owner_id>owner</owner_id>
+                            <group_id></group_id>
+                            <is_original_file>TRUE</is_original_file>
+                            <is_downloadable>FALSE</is_downloadable>
+                            <filename>testfilename.wmv</filename>
+                            <uri></uri>
+                            <transcode_profile_id></transcode_profile_id>
+                            <tool></tool>
+                            <command></command>
+                            <file_extension></file_extension>
+                            <is_protected>FALSE</is_protected>
+                            <created>2009-09-22 14:42:03</created>
+                            <changed>2009-09-23 14:40:02</changed>
+                            <transcode_inherits_acl>FALSE</transcode_inherits_acl>
+                            <mediafile_source></mediafile_source>
+                            <tag>test</tag>
+                            <is_streamable>FALSE</is_streamable>
+                            <is_still>FALSE</is_still>
+                            <metadata>
+                                <video_codec>wmv3</video_codec>
+                                <colorspace>yuv420p</colorspace>
+                                <width>384</width>
+                                <height>288</height>
+                                <fps>25</fps>
+                                <audio_codec>wmav2</audio_codec>
+                                <sample_rate>44100</sample_rate>
+                                <channels>2</channels>
+                                <file_duration>00:00:45.7</file_duration>
+                                <container_type>asf</container_type>
+                                <bitrate>1023</bitrate>
+                                <bpp>0.37</bpp>
+                                <filesize>5851382</filesize>
+                                <mime_type>video/x-ms-asf</mime_type>
+                                <created>2009-10-12 16:48:33</created>
+                                <changed>2009-10-12 16:48:33</changed>
+                                <is_hinted>FALSE</is_hinted>
+                                <is_inserted_md>FALSE</is_inserted_md>
+                        </metadata>
+                        <ega_download_url></ega_download_url>
+                        <ega_play_url>http://your_ega_play_url/play/M9FyEFTVy0zFzpbOv7DaEH4U/9PIxRij3YGRgenkyjwOT7zyS/19697</ega_play_url>
+                        <ega_stream_url>http://your_stream_url/M9FyEFTVy0zFzpbOv7DaEH4U/9PIxRij3YGRgenkyjwOT7zyS/19697</ega_stream_url>
+                    </mediafile>
+                    <mediafile id="2">
+                        <mediafile_id>2vi8R0dDLXyCKE3vC6qYL2bG</mediafile_id>
+                        <asset_id>M9FyEFTVy0zFzpbOv7DaEH4U</asset_id>
+                        <app_id>4</app_id>
+                        <owner_id>owner</owner_id>
+                        <group_id></group_id>
+                        <is_original_file>FALSE</is_original_file>
+                        <is_downloadable>FALSE</is_downloadable>
+                        <filename>testvideo.flv</filename>
+                        <uri></uri>
+                        <transcode_profile_id>2</transcode_profile_id>
+                        <tool>ffmpeg</tool>
+                        <command>videobitrate:200000;size:320x240;audiosamplingrate:22050;maintain_aspect_ratio:yes;padding:no</command>
+                        <file_extension>flv</file_extension>
+                        <is_protected>FALSE</is_protected>
+                        <created>2009-09-22 14:42:30</created>
+                        <changed>2009-09-22 15:19:49</changed>
+                        <transcode_inherits_acl>FALSE</transcode_inherits_acl>
+                        <mediafile_source></mediafile_source>
+                        <tag>transcoded</tag>
+                        <is_streamable>FALSE</is_streamable>
+                        <is_still>FALSE</is_still>
+                        <metadata>
+                            <video_codec>flv</video_codec>
+                            <colorspace>yuv420p</colorspace>
+                            <width>320</width>
+                            <height>240</height>
+                            <fps>25</fps>
+                            <audio_codec>mp3</audio_codec>
+                            <sample_rate>22050</sample_rate>
+                            <channels>1</channels>
+                            <file_duration>00:00:45.6</file_duration>
+                            <container_type>flv</container_type>
+                            <bitrate>200</bitrate>
+                            <bpp>0.1</bpp>
+                            <filesize>1828989</filesize>
+                            <mime_type>video/x-flv</mime_type>
+                            <created>2009-10-12 16:48:33</created>
+                            <changed>2009-10-12 16:48:33</changed>
+                            <is_hinted>FALSE</is_hinted>
+                            <is_inserted_md>TRUE</is_inserted_md>
+                        </metadata>
+                        <ega_download_url></ega_download_url>
+                        <ega_play_url>http://your_ega_play_url/play/M9FyEFTVy0zFzpbOv7DaEH4U/2vi8R0dDLXyCKE3vC6qYL2bG/19697.flv</ega_play_url>
+                        <ega_stream_url>http://your_stream_url/M9FyEFTVy0zFzpbOv7DaEH4U/2vi8R0dDLXyCKE3vC6qYL2bG/19697.flv</ega_stream_url>
+                    </mediafile>
+                </mediafiles>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="asset_id"/>
+            <xs:element ref="app_id"/>
+            
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <!-- /errorcodes [GET] -->
+    <xs:complexType name="ErrorcodeType">
+        <xs:annotation>
+            <xs:documentation>
+                /errorcodes [GET]
+                <![CDATA[
+                <item>
+                    <name>HTTP_NOT_FOUND</name>
+                    <code>404</code>
+                    <message>Page not found: @uri (method: @method, parameters: @params)</message>
+                </item>
+                <item>
+                    <name>ERRORCODE_OKAY</name>
+                    <code>601</code>
+                    <message/>
+                </item>
+                <item>
+                    <name>ERRORCODE_TIME_RESTRICTION_START</name>
+                    <code>602</code>
+                    <message>PP - time_restriction_start error: @date (@timestamp)</message>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="name"/>
+            <xs:element ref="code"/>
+            <xs:element ref="message"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MediafileType">
+        <xs:sequence>
+            <!-- didn't define 'mediafile_id' since we use an attribute for that -->
+            <xs:element ref="asset_id"/>
+            <xs:element name="mediafile_id_source">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="tag">
+                <xs:simpleType>
+                    <!-- not sure what to expect here, assumed a string value -->
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element ref="app_id"/>
+            <xs:element name="owner_id">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="group_id">
+                <xs:simpleType>
+                    <!-- I assumed this would be a string not an int, right? -->
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="original_file">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="downloadable">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="streamable">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="still">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="filename">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="uri">
+                <xs:simpleType>
+                    <xs:restriction base="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="transcode_profile_id">
+                <xs:simpleType>
+                    <xs:restriction base="xs:int"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="tool">
+                <xs:simpleType>
+                    <!-- I assumed this would be a string, right? -->
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="command">
+                <xs:simpleType>
+                    <!-- I assumed this would be a string, right? -->
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="file_extension">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:element>
+            <!-- see comments for element 'private', dropped 'is_' prefix -->
+            <xs:element name="protected">
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="created">
+                <!-- for element 'created' the type is defined in this schema,
+                    the 'type' attribute in the XML document is not needed -->
+                <xs:simpleType>
+                    <xs:restriction base="xs:dateTime"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="changed">
+                <!-- for element 'changed' the type is defined in this schema,
+                    the 'type' attribute in the XML document is not needed -->
+                <xs:simpleType>
+                    <xs:restriction base="xs:dateTime"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="transcode_inherits_acl">
+                <!-- for element 'transcode_inherits_acl' the type is defined in this schema,
+                the 'type' attribute in the XML document is not needed -->
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <!--
+            metadata
+            -->
+            <xs:element name="url_download">
+                <xs:simpleType>
+                    <xs:restriction base="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="url_stream">
+                <xs:simpleType>
+                    <xs:restriction base="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="url_play">
+                <xs:simpleType>
+                    <xs:restriction base="xs:anyURI"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="response_object_available">
+                <!-- for element 'response_object_available' the type is defined in this schema,
+                    the 'type' attribute in the XML document is not needed -->
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="response_plain_available">
+                <!-- for element 'response_plain_available' the type is defined in this schema,
+                    the 'type' attribute in the XML document is not needed -->
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="response_metafile_available">
+                <!-- for element 'response_metafile_available' the type is defined in this schema,
+                    the 'type' attribute in the XML document is not needed -->
+                <xs:simpleType>
+                    <xs:restriction base="xs:boolean"/>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id">
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="type">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <!-- possible values should be listed here -->
+                    <xs:enumeration value="media"/>
+                    <xs:enumeration value="thumbnail"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+  
+    <!-- /asset/$asset_id/play [GET] -->
+    <xs:complexType name="LinkType">
+        <xs:annotation>
+            <xs:documentation>
+                /asset/$asset_id/play [GET]
+                <![CDATA[
+                <item id="1">
+                    <output>http://mediamosa.local/download/T2hLaHNlDROR6UTYJFn2b8Cz/Filename_not_set</output>
+                    <content_type></content_type>
+                    <ticket_id>T2hLaHNlDROR6UTYJFn2b8Cz</ticket_id>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="output"/>
+            <xs:element ref="content_type"/>
+            <xs:element ref="ticket_id"/>
+        </xs:sequence>
+    </xs:complexType>
+  
+    <!-- /asset/$asset_id/supplement [GET] -->
+    <xs:complexType name="SupplementType">
+        <xs:annotation>
+            <xs:documentation>
+                /asset/$asset_id/supplement [GET]
+                <![CDATA[
+                <item id="1">
+                    <supplement_id>w27fFVLXbXIQqUuiTAqDe7Hx</supplement_id>
+                    <asset_id>S2Eg3Fzh2Rdw5dLbArmgqRKr</asset_id>
+                    <tag></tag>
+                    <oai_prefix></oai_prefix>
+                    <oai_namespaceuri></oai_namespaceuri>
+                    <oai_schemalocation></oai_schemalocation>
+                    <created>2010-04-08 15:42:41</created>
+                    <changed>2010-04-08 15:50:54</changed>
+                    <supplement_base64>YmxhYmxh</supplement_base64>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="supplement_id"/>
+            <xs:element ref="asset_id"/>
+            <xs:element ref="tag"/>
+            <xs:element ref="oai_prefix"/>
+            <xs:element ref="oai_namespaceuri"/>
+            <xs:element ref="oai_schemalocation"/>
+            <xs:element ref="created"/>
+            <xs:element ref="changed"/>
+            <xs:element ref="supplement_base64"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- /user/$user_id/joblist [GET] -->
+    <xs:complexType name="JoblistType">
+        <xs:annotation>
+            <xs:documentation>
+                /user/$user_id/joblist [GET]
+                <![CDATA[
+                <item id="1">
+                    <id>10</id>
+                    <owner>admin</owner>
+                    <status>FINISHED</status>
+                    <progress>1.000</progress>
+                    <priority>-1</priority>
+                    <job_type>ANALYSE</job_type>
+                    <started>07-04-2010 16:11</started>
+                    <started_unix>1270649471</started_unix>
+                    <error_description></error_description>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="id"/>
+            <xs:element ref="owner"/>
+            <xs:element ref="status"/>
+            <xs:element ref="progress"/>
+            <xs:element ref="priority"/>
+            <xs:element ref="job_type"/>
+            <xs:element ref="started"/>
+            <xs:element ref="started_unix"/>
+            <xs:element ref="error_description"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- /mediafile/$mediafile_id/uploadticket/create [POST] -->
+    <xs:complexType name="UploadTicketType">
+        <xs:annotation>
+            <xs:documentation>
+                /mediafile/$mediafile_id/uploadticket/create [POST]
+                <![CDATA[
+                <item id="1">
+                    <action>http://upload.mediamosa.local/mediafile/upload?upload_ticket=F1LVMTUCNi5kjXNbHMZPFwzD&X-Progress-ID=12345</action>
+                    <uploadprogress_url>http://upload.mediamosa.local/mediafile/uploadprogress?id=12345</uploadprogress_url>
+                    <ticket_id>8474096 Z1ZmZMMNhLHIfGj9cgSvAd2R</ticket_id>
+                    <progress_id>1234567</progress_id>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="action"/>
+            <xs:element ref="uploadprogress_url"/>
+            <xs:element ref="ticket_id"/>
+            <xs:element ref="progress_id"/>
+        </xs:sequence>
+        
+    </xs:complexType>
+    
+    <!-- /version [GET] -->
+    <xs:complexType name="VersionType">
+        <xs:annotation>
+            <xs:documentation>
+                /version [GET]
+                <![CDATA[
+                <item>
+                    <version>3.0.5</version>
+                    <build>1775</build>
+                    <info/>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="version"/>
+            <xs:element ref="build"/>
+            <xs:element ref="info"/>
+        </xs:sequence>      
+    </xs:complexType>
+    
+</xs:schema>
