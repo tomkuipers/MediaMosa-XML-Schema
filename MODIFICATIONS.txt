@@ -1,0 +1,5 @@
+
+ELEMENT		TYPE		VALUE			COMMENT
+-------		----		-----			-------
+		xs:dateTime	YYYY-mm-ddThh:mi:ss	add 'T' between date and time part, currently a space (' ') is used
+		xs:boolean	true/false		lowercase, currently TRUE/FALSE is used 
