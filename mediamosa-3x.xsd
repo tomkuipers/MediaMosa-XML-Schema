@@ -4,10 +4,11 @@
     <!-- targetNamespace="http://mediamosa.org/schemas/3.0" -->
     <xs:annotation>
         <xs:documentation>
-            Draft version of XML Schema for MediaMosa 3.x example output, Tom Kuipers 
+            Draft version of XML Schema for MediaMosa 3.x desired output, Tom Kuipers 
             Make this available online at http://mediamosa.org/schemas/3.0/mediamosa.xsd
             - minOccurs = 0 means optional. Default is 1 - maxOccurs = number of occurences.
             "unbounded" means as many occurences as wished. Default is 1
+            - empty elements in example responses are made optional (minOccurs=0)
         </xs:documentation>
     </xs:annotation>
     
@@ -57,10 +58,8 @@
     <xs:element name="content_type" type="xs:string"/><!-- string value? -->
     <xs:element name="download_url" type="xs:anyURI"/>
     <xs:element name="error_description" type="xs:string"/>
-    <xs:element name="is_empty_asset" type="xs:boolean"/><!-- drop prefix 'is_' -->
-    <!-- <xs:element name="empty_asset" type="xs:boolean"/> -->
-    <xs:element name="is_external" type="xs:boolean"/><!-- drop prefix 'is_' -->
-    <!-- <xs:element name="external" type="xs:boolean"/> -->
+    <xs:element name="empty_asset" type="xs:boolean"/><!-- was 'is_empty_asset' -->
+    <xs:element name="external" type="xs:boolean"/><!--  was 'is_external' -->
     <xs:element name="group_id"/><!-- I assumed this would be a string (token) not an int, right? -->
     <xs:element name="id" type="xs:int"/>
     <xs:element name="info" type="xs:string"/>
@@ -86,22 +85,18 @@
     <xs:element name="play_restriction_start" type="xs:dateTime"/>
     <xs:element name="play_restriction_end" type="xs:dateTime"/>
     <xs:element name="played" type="xs:int"/><!-- restriction minInclusive 0, or just empty when never watched? -->
-    <xs:element name="isprivate" type="xs:boolean"/><!-- is_private, isprivate or private (my vote) be consequent, drop prefix 'is' -->
-    <!-- <xs:element name="private" type="xs:boolean"/> -->
+    <xs:element name="private" type="xs:boolean"/><!-- is_private, isprivate or private (my vote) be consequent, drop prefix 'is' -->
     <xs:element name="priority" type="xs:int"/>
     <xs:element name="progress" type="xs:float"/>
     <xs:element name="progress_id" type="xs:int"/><!-- is there a maximun value for this, e.g. more than int maxinclusive 2147483647  -->
-    <xs:element name="is_protected" type="xs:string"/><!-- drop prefix 'is_' , example response is string! value 'DOMAIN_REALM' (enumeration?) -->
-    <!---
-    <xs:element name="protected">
+    <xs:element name="protected"><!-- was 'is_protected' , example response is string! value 'DOMAIN_REALM' (enumeration?) -->
         <xs:simpleType>
-            <xs:restriction base="xs:string"> -->
+            <xs:restriction base="xs:string">
                 <!-- what other types are there? -->
-                <!-- <xs:enumeration value="DOMAIN_REALM"/>
+                <xs:enumeration value="DOMAIN_REALM"/>
             </xs:restriction>
         </xs:simpleType>
     </xs:element>
-    -->
     <xs:element name="provider_id"/><!-- don't know what to expect here, type/xs:restriction not specified, can be xs:string or xs:int -->
     <xs:element name="quota_available_mb">
         <xs:simpleType>
@@ -121,15 +116,12 @@
             </xs:restriction>
         </xs:simpleType>
     </xs:element>
-    <xs:element name="has_streamable_mediafiles" type="xs:boolean"/><!-- drop prefix 'has_' -->
-    <!-- <xs:element name="streamable_mediafiles" type="xs:boolean"/> -->
+    <xs:element name="streamable_mediafiles" type="xs:boolean"/><!-- was 'has_streamable_mediafiles' -->
     <xs:element name="supplement_id" type="xs:token"/><!-- or token (xs:MNTOKEN) -->
     <xs:element name="supplement_base64" type="xs:base64Binary"/>
     <xs:element name="tag" type="xs:string"/><!-- not sure what to expect here, assumed a string value -->
     <xs:element name="ticket_id" type="xs:token"/>
-    <xs:element name="is_unappropiate" type="xs:boolean"/><!-- typo deprecated -->
-    <xs:element name="is_unappropriate" type="xs:boolean"/><!-- drop prefix 'is_' -->
-    <!-- <xs:element name="unappropriate" type="xs:boolean"/> -->
+    <xs:element name="unappropriate" type="xs:boolean"/><!-- was 'is_unappropiate'/'is_unappropriate' -->
     <xs:element name="uploadprogress_url" type="xs:anyURI"/>
     <xs:element name="version" type="xs:string"/>
     <xs:element name="videotimestamp" type="xs:dateTime"/>
@@ -218,6 +210,8 @@
 
     <xs:complexType name="ItemsType">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="app" type="AppType"/>
+            <xs:element name="app_quota" type="AppQuotaType"/>
             <!-- the example XML uses 'asset' but this can be 'mediafile', 'user' etc.  -->
             <xs:element name="asset" type="AssetType"/>
             
@@ -277,17 +271,115 @@
     
     <!-- /asset [GET] -->
     <xs:complexType name="AssetType">
+        <xs:annotation>
+            <xs:documentation>
+               <![CDATA[
+                <item id="1">
+                    <asset_id>10061</asset_id>
+                    <app_id>1</app_id>
+                    <provider_id></provider_id>
+                    <owner_id>av-user-naa</owner_id>
+                    <group_id>beeldengeluid</group_id>
+                    <videotimestamp>2004-09-10 22:22:08</videotimestamp>
+                    <videotimestampmodified>2004-09-10 22:22:08</videotimestampmodified>
+                    <play_restriction_start></play_restriction_start>
+                    <play_restriction_end></play_restriction_end>
+                    <reference_id></reference_id>
+                    <isprivate>FALSE</isprivate>
+                    <is_protected>FALSE</is_protected>
+                    <dublin_core>
+                        <type>Video</type>
+                        <language>EN</language>
+                        <title>kurkentrekker.mpg</title>
+                        <creator>naa</creator>
+                        <publisher>naa</publisher>
+                        <description>this kurkentrekker.mpg of naa was n/naa/mpeg/kurkentrekker.mpg</description>
+                        <date>2004-09-10 22:22:08</date>
+                        <format></format>
+                        <subject></subject>
+                        <contributor></contributor>
+                        <identifier></identifier>
+                        <source></source>
+                        <relation></relation>
+                        <coverage_temporal></coverage_temporal>
+                        <coverage_spatial></coverage_spatial>
+                        <rights></rights>
+                    </dublin_core>
+                    <qualified_dublin_core>
+                        <title_alternative></title_alternative>
+                        <description_abstract></description_abstract>
+                        <created></created>
+                        <issued></issued>
+                        <hasformat></hasformat>
+                        <isformatof></isformatof>
+                        <format_medium></format_medium>
+                        <format_extent></format_extent>
+                        <license></license>
+                        <rightsholder></rightsholder>
+                        <isreferencedby></isreferencedby>
+                    </qualified_dublin_core>
+                </item>
+                <item id="2">
+                    <asset_id>10062</asset_id>
+                    <app_id>1</app_id>
+                    <provider_id></provider_id>
+                    <owner_id>av-user-naa</owner_id>
+                    <group_id>beeldengeluid</group_id>
+                    <videotimestamp>2004-09-10 22:22:08</videotimestamp>
+                    <videotimestampmodified></videotimestampmodified>
+                    <play_restriction_start></play_restriction_start>
+                    <play_restriction_end></play_restriction_end>
+                    <reference_id></reference_id>
+                    <isprivate>FALSE</isprivate>
+                    <is_protected>FALSE</is_protected>
+                    <created>2008-04-07 09:53:44</created>
+                    <changed>2008-04-17 23:44:44</changed>
+                    <dublin_core>
+                        <type>Video</type>
+                        <language>EN</language>
+                        <title>interculturele-mpeg1-vhs.mpg</title>
+                        <creator>naa</creator>
+                        <publisher>naa</publisher>
+                        <description>this interculturele-mpeg1-vhs.mpg of naa was n/naa/mpeg/interculturele-mpeg1-vhs.mpg</description>
+                        <date>2004-09-10 22:22:08</date>
+                        <format></format>
+                        <subject></subject>
+                        <contributor></contributor>
+                        <identifier></identifier>
+                        <source></source>
+                        <relation></relation>
+                        <coverage_temporal></coverage_temporal>
+                        <coverage_spatial></coverage_spatial>
+                        <rights></rights>
+                    </dublin_core>
+                    <qualified_dublin_core>
+                        <title_alternative></title_alternative>
+                        <description_abstract></description_abstract>
+                        <created></created>
+                        <issued></issued>
+                        <hasformat></hasformat>
+                        <isformatof></isformatof>
+                        <format_medium></format_medium>
+                        <format_extent></format_extent>
+                        <license></license>
+                        <rightsholder></rightsholder>
+                        <isreferencedby></isreferencedby>
+                    </qualified_dublin_core>
+                </item>
+               ]]>
+            </xs:documentation>
+        </xs:annotation>
         <xs:sequence>
             <!-- didn't define 'asset_id' since we use an attribute for that -->
             <xs:element ref="app_id"/>
-            <xs:element ref="provider_id"/>
+            <xs:element ref="provider_id" minOccurs="0"/>
             <xs:element ref="owner_id"/>
             <xs:element ref="group_id"/>
             <xs:element ref="videotimestamp"/>
             <xs:element ref="videotimestampmodified"/>
-            <xs:element ref="play_restriction_start"/>
-            <xs:element ref="play_restriction_end"/>
-            <xs:element ref="reference_id"/>
+            <xs:element ref="play_restriction_start" minOccurs="0"/>
+            <xs:element ref="play_restriction_end" minOccurs="0"/>
+            <xs:element ref="reference_id" minOccurs="0"/>
             <!-- for element 'isprivate' the type is defined in this schema,
                 the 'type' attribute in the XML document is not needed.
                 Other boolean elements, like 'is_favorite' or 'is_external' have an underscore. 
@@ -575,24 +667,16 @@
             <xs:element ref="play_restriction_start"/>
             <xs:element ref="play_restriction_end"/>
             <xs:element ref="reference_id"/>
-            <xs:element ref="isprivate"/>
-            <!-- should be <xs:element ref="private"/> -->
+            <xs:element ref="private"/><!-- was 'isprivate' -->
             <xs:element ref="mediafile_duration"/>
             <xs:element ref="mediafile_container_type"/>
-            <xs:element ref="is_unappropiate"/>
-            <xs:element ref="is_unappropriate"/>
-            <!-- should be <xs:element ref="unappropriate"/> -->
-            <xs:element ref="is_external"/>
-            <!-- should be <xs:element ref="external"/> -->
+            <xs:element ref="unappropriate"/><!-- was 'is_unappropiate'/'is_unappropriate' -->
+            <xs:element ref="external"/><!-- was 'is_external' -->
             <xs:element ref="viewed"/>
             <xs:element ref="played"/>
-            <xs:element ref="is_empty_asset"/>
-            <!-- should be <xs:element ref="empty_asset"/> -->
-            <xs:element ref="is_protected"/>
-            <!-- should be <xs:element ref="protected"/> -->
-            <xs:element ref="has_streamable_mediafiles"/>
-            <!-- should be <xs:element ref="has_streamable_mediafiles"/> -->
-            
+            <xs:element ref="empty_asset"/><!-- was 'is_empty_asset' -->
+            <xs:element ref="protected"/><!-- was 'is_protected' -->
+            <xs:element ref="streamable_mediafiles"/><!-- was 'has_streamable_mediafiles' -->
             
             
         </xs:sequence>
@@ -626,7 +710,7 @@
         <xs:sequence>
             <xs:element ref="name"/>
             <xs:element ref="code"/>
-            <xs:element ref="message"/>
+            <xs:element ref="message" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -812,7 +896,7 @@
         </xs:annotation>
         <xs:sequence>
             <xs:element ref="output"/>
-            <xs:element ref="content_type"/>
+            <xs:element ref="content_type" minOccurs="0"/>
             <xs:element ref="ticket_id"/>
         </xs:sequence>
     </xs:complexType>
@@ -840,12 +924,12 @@
         <xs:sequence>
             <xs:element ref="supplement_id"/>
             <xs:element ref="asset_id"/>
-            <xs:element ref="tag"/>
-            <xs:element ref="oai_prefix"/>
-            <xs:element ref="oai_namespaceuri"/>
-            <xs:element ref="oai_schemalocation"/>
+            <xs:element ref="tag" minOccurs="0"/>
+            <xs:element ref="oai_prefix" minOccurs="0"/>
+            <xs:element ref="oai_namespaceuri" minOccurs="0"/>
+            <xs:element ref="oai_schemalocation" minOccurs="0"/>
             <xs:element ref="created"/>
-            <xs:element ref="changed"/>
+            <xs:element ref="changed"/><!-- can this be empty? (minOccurs=0) -->
             <xs:element ref="supplement_base64"/>
         </xs:sequence>
     </xs:complexType>
@@ -879,7 +963,7 @@
             <xs:element ref="job_type"/>
             <xs:element ref="started"/>
             <xs:element ref="started_unix"/>
-            <xs:element ref="error_description"/>
+            <xs:element ref="error_description" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
     
@@ -924,7 +1008,7 @@
         <xs:sequence>
             <xs:element ref="version"/>
             <xs:element ref="build"/>
-            <xs:element ref="info"/>
+            <xs:element ref="info" minOccurs="0"/>
         </xs:sequence>      
     </xs:complexType>
     
