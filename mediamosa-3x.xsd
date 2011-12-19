@@ -33,6 +33,7 @@
     </xs:element>
 
     <!-- simple elements for re-use-->
+    <xs:element name="acl_app" type="xs:int"/>
     <xs:element name="action" type="xs:anyURI"/>
     <xs:element name="app_id">
         <xs:simpleType>
@@ -162,6 +163,9 @@
     </xs:element>
     <xs:element name="reference_id" type="xs:token"/><!-- not sure what to expect here, assumed a string value -->
     <xs:element name="relation"/><!-- used in 'dublin_core', is this a string? -->
+    <xs:element name="result" type="xs:string"/>
+    <xs:element name="resultDescription" type="xs:string"/>
+    <xs:element name="resultId" type="xs:int"/>
     <xs:element name="rights"/><!-- used in 'dublin_core', is this a string? -->
     <xs:element name="rightsholder"/><!-- used in 'qualified_dublin_core' is this a string? -->
     <xs:element name="sample_rate" type="xs:int"/>
@@ -211,19 +215,9 @@
 
     <xs:complexType name="RequestType">
         <xs:sequence>
-            <xs:element name="resultId">
-                <xs:simpleType>
-                    <xs:restriction base="xs:int"/>
-                </xs:simpleType>
-            </xs:element>
-            <xs:element name="result">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string"/>
-                </xs:simpleType>
-            </xs:element>
-            <xs:element name="description">
-                <!-- don't know what to expect here, xs:restriction not specified -->
-            </xs:element>
+            <xs:element ref="resultId"/>
+            <xs:element ref="result"/>
+            <xs:element ref="resultDescription"/><!-- don't know what to expect here, xs:restriction not specified -->
             <xs:element name="method">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
@@ -1075,6 +1069,43 @@
             
         </xs:sequence>
     </xs:complexType>
+
+    <!-- /asset/$asset_id/acl [GET] and [POST] -->
+    <xs:complexType name="AclType">
+        <xs:annotation>
+            <xs:documentation>
+                /asset/$asset_id/acl [GET]
+                <![CDATA[
+                <item id="1">
+                    <acl_app>5</acl_app>
+                </item>
+                ]]>
+                /asset/$asset_id/acl [POST]
+                <![CDATA[
+                <item id="1">
+                    <acl_app>
+                        <value>5</value>
+                        <result>success</result>
+                        <result_id>601</result_id>
+                        <result_description></result_description>
+                    </acl_app>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- what more (optional) elements to expect? -->
+            <xs:element ref="acl_app"/>
+            <!-- merge GET and POST responses -->
+            <xs:element ref="result"/>
+            <xs:element ref="resultId"/><!-- was 'result_id' but 'resultId' is already in use in 3.0.x output -->
+            <xs:element ref="resultDescription"/><!-- was 'result_description' but 'resultDescription' is already in use in 3.0.x output -->
+        </xs:sequence>
+        
+    </xs:complexType>
+
+    <!-- -->
+    
 
     <!-- /errorcodes [GET] -->
     <xs:complexType name="ErrorcodeType">
