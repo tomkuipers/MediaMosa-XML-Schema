@@ -9,6 +9,8 @@
             - minOccurs = 0 means optional. Default is 1 - maxOccurs = number of occurences.
             "unbounded" means as many occurences as wished. Default is 1
             - empty elements in example responses are made optional (minOccurs=0)
+            - Dublin Core and Qualified Dublin Core already have schemas, http://dublincore.org/schemas/xmls/ why not use them?
+              dc:title, dc:description 
         </xs:documentation>
     </xs:annotation>
     
@@ -54,15 +56,30 @@
     <xs:element name="class" type="xs:string"/>
     <xs:element name="code" type="xs:int"/>
     <xs:element name="changed" type="xs:dateTime"/>
-    <xs:element name="created" type="xs:dateTime"/>
     <xs:element name="content_type" type="xs:string"/><!-- string value? -->
+    <xs:element name="contributor" type="xs:string"/>
+    <xs:element name="coverage_spatial"/><!-- used in 'dublin_core', is this a string? -->
+    <xs:element name="coverage_temporal"/><!-- used in 'dublin_core', is this a string? -->
+    <xs:element name="created" type="xs:dateTime"/>
+    <xs:element name="creator" type="xs:string"/>
+    <xs:element name="date" type="xs:dateTime"/>
+    <xs:element name="description" type="xs:string"/>
+    <xs:element name="description_abstract" type="xs:string"/>
     <xs:element name="download_url" type="xs:anyURI"/>
     <xs:element name="error_description" type="xs:string"/>
     <xs:element name="empty_asset" type="xs:boolean"/><!-- was 'is_empty_asset' -->
     <xs:element name="external" type="xs:boolean"/><!--  was 'is_external' -->
     <xs:element name="group_id"/><!-- I assumed this would be a string (token) not an int, right? -->
+    <xs:element name="format" type="xs:string"/><!-- is this a string? -->
+    <xs:element name="format_medium"/><!-- used in 'qualified_dublin_core' is this a string? -->
+    <xs:element name="format_extent"/><!-- used in 'qualified_dublin_core' is this a string? -->
+    <xs:element name="hasformat"/><!-- used in 'qualified_dublin_core' is this a boolean, can prefix 'has' be dropped? -->
     <xs:element name="id" type="xs:int"/>
+    <xs:element name="identifier"/><!-- used in 'dublin_core', is this a string? -->
     <xs:element name="info" type="xs:string"/>
+    <xs:element name="isformatof"/><!-- used in 'dublin_core', is this a string? -->
+    <xs:element name="isreferencedby"/><!-- used in 'qualified_dublin_core' is this a string? -->
+    <xs:element name="issued" type="xs:dateTime"/>
     <xs:element name="job_type">
         <xs:simpleType>
             <xs:restriction base="xs:string">
@@ -71,6 +88,8 @@
             </xs:restriction>
         </xs:simpleType>
     </xs:element>
+    <xs:element name="language" type="xs:language"/>
+    <xs:element name="license"/><!-- used in 'qualified_dublin_core' is this a string? -->
     <xs:element name="mediafile_duration" type="xs:time"/>
     <xs:element name="mediafile_container_type" type="xs:string"/>
     <xs:element name="message" type="xs:string"/>
@@ -98,6 +117,7 @@
         </xs:simpleType>
     </xs:element>
     <xs:element name="provider_id"/><!-- don't know what to expect here, type/xs:restriction not specified, can be xs:string or xs:int -->
+    <xs:element name="publisher" type="xs:string"/>
     <xs:element name="quota_available_mb">
         <xs:simpleType>
             <xs:restriction base="xs:int">
@@ -106,6 +126,10 @@
         </xs:simpleType>
     </xs:element>
     <xs:element name="reference_id" type="xs:token"/><!-- not sure what to expect here, assumed a string value -->
+    <xs:element name="relation"/><!-- used in 'dublin_core', is this a string? -->
+    <xs:element name="rights"/><!-- used in 'dublin_core', is this a string? -->
+    <xs:element name="rightsholder"/><!-- used in 'qualified_dublin_core' is this a string? -->
+    <xs:element name="source"/><!-- used in 'dublin_core', is this a string? -->
     <xs:element name="started" type="xs:dateTime"/>
     <xs:element name="started_unix" type="xs:long"/>
     <xs:element name="status">
@@ -117,10 +141,14 @@
         </xs:simpleType>
     </xs:element>
     <xs:element name="streamable_mediafiles" type="xs:boolean"/><!-- was 'has_streamable_mediafiles' -->
+    <xs:element name="subject" type="xs:string"/>
     <xs:element name="supplement_id" type="xs:token"/><!-- or token (xs:MNTOKEN) -->
     <xs:element name="supplement_base64" type="xs:base64Binary"/>
     <xs:element name="tag" type="xs:string"/><!-- not sure what to expect here, assumed a string value -->
     <xs:element name="ticket_id" type="xs:token"/>
+    <xs:element name="title" type="xs:string"/>
+    <xs:element name="title_alternative" type="xs:string"/>
+    <xs:element name="type" type="xs:string"/><!-- 'type' in 'dublin_core' string, or enumeration, fixed set of types? required or optional -->
     <xs:element name="unappropriate" type="xs:boolean"/><!-- was 'is_unappropiate'/'is_unappropriate' -->
     <xs:element name="uploadprogress_url" type="xs:anyURI"/>
     <xs:element name="version" type="xs:string"/>
@@ -220,6 +248,88 @@
             <xs:element name="version" type="VersionType"/>
         </xs:choice>
     </xs:complexType>
+
+    <xs:complexType name="DublinCoreType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <dublin_core>
+                    <type>Video</type>
+                    <language>EN</language>
+                    <title>kurkentrekker.mpg</title>
+                    <creator>naa</creator>
+                    <publisher>naa</publisher>
+                    <description>this kurkentrekker.mpg of naa was n/naa/mpeg/kurkentrekker.mpg</description>
+                    <date>2004-09-10 22:22:08</date>
+                    <format></format>
+                    <subject></subject>
+                    <contributor></contributor>
+                    <identifier></identifier>
+                    <source></source>
+                    <relation></relation>
+                    <coverage_temporal></coverage_temporal>
+                    <coverage_spatial></coverage_spatial>
+                    <rights></rights>
+                </dublin_core>
+                ]]>                
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="type" minOccurs="0"/>
+            <xs:element ref="language" minOccurs="0"/>
+            <xs:element ref="title" minOccurs="0"/>
+            <xs:element ref="creator" minOccurs="0"/>
+            <xs:element ref="publisher" minOccurs="0"/>
+            <xs:element ref="description" minOccurs="0"/>
+            <xs:element ref="date"/>
+            <xs:element ref="format" minOccurs="0"/>
+            <xs:element ref="subject" minOccurs="0"/>
+            <xs:element ref="contributor" minOccurs="0"/>
+            <xs:element ref="identifier" minOccurs="0"/>
+            <xs:element ref="source" minOccurs="0"/>
+            <xs:element ref="relation" minOccurs="0"/>
+            <xs:element ref="coverage_temporal" minOccurs="0"/>
+            <xs:element ref="coverage_spatial" minOccurs="0"/>
+            <xs:element ref="rights" minOccurs="0"/>
+        </xs:sequence>        
+    </xs:complexType>
+
+    <xs:complexType name="QualifiedDublinCoreType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <qualified_dublin_core>
+                    <title_alternative></title_alternative>
+                    <description_abstract></description_abstract>
+                    <created></created>
+                    <issued></issued>
+                    <hasformat></hasformat>
+                    <isformatof></isformatof>
+                    <format_medium></format_medium>
+                    <format_extent></format_extent>
+                    <license></license>
+                    <rightsholder></rightsholder>
+                    <isreferencedby></isreferencedby>
+                </qualified_dublin_core>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="title_alternative" minOccurs="0"/>
+            <xs:element ref="description_abstract" minOccurs="0"/>
+            <xs:element ref="created" minOccurs="0"/>
+            <xs:element ref="issued" minOccurs="0"/>
+            <xs:element ref="hasformat" minOccurs="0"/>
+            <xs:element ref="isformatof" minOccurs="0"/>
+            <xs:element ref="format_medium" minOccurs="0"/>
+            <xs:element ref="format_extent" minOccurs="0"/>
+            <xs:element ref="license" minOccurs="0"/>
+            <xs:element ref="rightsholder" minOccurs="0"/>
+            <xs:element ref="isreferencedby" minOccurs="0"/>
+        </xs:sequence>
+        
+    </xs:complexType>
+
 
     <!-- /acl/app [GET] -->
     <xs:complexType name="AppType">
@@ -676,12 +786,13 @@
             <xs:element ref="played"/>
             <xs:element ref="empty_asset"/><!-- was 'is_empty_asset' -->
             <xs:element ref="protected"/><!-- was 'is_protected' -->
-            <xs:element ref="streamable_mediafiles"/><!-- was 'has_streamable_mediafiles' -->
-            
+            <xs:element ref="streamable_mediafiles"/><!-- was 'has_streamable_mediafiles' -->            
+            <xs:element name="dublin_core" type="DublinCoreType"/>
+            <xs:element name="qualified_dublin_core" type="QualifiedDublinCoreType"/>
+
             
         </xs:sequence>
     </xs:complexType>
-
 
     <!-- /errorcodes [GET] -->
     <xs:complexType name="ErrorcodeType">
