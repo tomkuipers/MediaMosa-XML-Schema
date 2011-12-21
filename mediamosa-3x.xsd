@@ -21,7 +21,7 @@
             - Fix typo in requests to /autorisation_group/* REST calls. Should be spelled 'authorization'
             - Rename element 'modified' to 'changed' (xs:dateTime) because this is been used more often in other elements in the schema.
             - We should provide an XML Schema for the VUF (video upload file) xml format.
-            - Rename element 'quotum' to 'group_quota_mb'
+            - Rename element 'quotum' to 'group_quota_mb' (quotum is child element for /group and /user REST calls)
             - Rename various 'job_*' elements in /job/failures response (job_asset_id = asset_id, job_started = started)
         </xs:documentation>
     </xs:annotation>
@@ -237,6 +237,8 @@
     <xs:element name="unappropriate" type="xs:boolean"/><!-- was 'is_unappropiate'/'is_unappropriate' -->
     <xs:element name="uploadprogress_url" type="xs:anyURI"/>
     <xs:element name="userId" type="xs:string"/><!-- was 'userid' -->
+    <xs:element name="user_diskspace_used_mb" type="xs:int"/>
+    <xs:element name="user_over_quota" type="xs:boolean"/>
     <xs:element name="uri" type="xs:anyURI"/>
     <xs:element name="version" type="xs:string"/>
     <xs:element name="video_codec" type="xs:string"/>
@@ -1993,10 +1995,11 @@
         </xs:sequence>
     </xs:complexType>
 
-    <!-- /group/$group_id [GET] -->
-    <xs:complexType name="GroupDetailsType">
+    <!-- /group/$group_id [GET] and /user/$user_id [GET]-->
+    <xs:complexType name="QuotaDetailsType">
         <xs:annotation>
             <xs:documentation>
+                /group/$group_id [GET]
                 <![CDATA[
                 <item id="1">
                     <app_quota_mb>10240000</app_quota_mb>
@@ -2009,6 +2012,23 @@
                     <changed>2008-07-17 13:54:42</changed>
                 </item>
                 ]]>
+                
+                /user/$user_id [GET]
+                <![CDATA[
+                <item id="1">
+                    <group_quota_mb>0</group_quota_mb>
+                    <app_quota_mb>0</app_quota_mb>
+                    <user_quota_mb>0</user_quota_mb>
+                    <app_diskspace_used_mb>0</app_diskspace_used_mb>
+                    <group_diskspace_used_mb>0</group_diskspace_used_mb>
+                    <user_diskspace_used_mb>0</user_diskspace_used_mb>
+                    <quota_available_mb>0</quota_available_mb>
+                    <user_over_quota>false</user_over_quota>
+                    <group_id></group_id>
+                    <created>2010-03-16 15:44:44</created>
+                    <changed>2010-03-16 15:44:44</changed>
+                </item>
+                ]]>
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
@@ -2016,8 +2036,11 @@
             <xs:element ref="group_quota_mb"/>
             <xs:element ref="app_diskspace_used_mb"/>
             <xs:element ref="group_diskspace_used_mb"/>
+            <xs:element ref="user_diskspace_used_mb" minOccurs="0"/>
             <xs:element ref="quota_available_mb"/>
             <xs:element ref="group_over_quota"/>
+            <xs:element ref="user_over_quota" minOccurs="0"/>
+            <xs:element ref="group_id" minOccurs="0"/><!-- can a user be in more than 1 group? are there multiple 'group_id' elements shown?-->
             <xs:element ref="created"/>
             <xs:element ref="changed"/>
         </xs:sequence>
@@ -2326,6 +2349,48 @@
         </xs:sequence>
         
     </xs:complexType>
+    
+    <!-- /user [GET] -->
+    <xs:complexType name="UserType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <user_id>admin</user_id>
+                    <group_id></group_id>
+                    <quotum></quotum>
+                    <created></created>
+                    <changed></changed>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="userId"/><!-- was 'user_id' -->
+            <xs:element ref="group_id" minOccurs="0"/>
+            <xs:element ref="group_quota_mb" minOccurs="0"/><!-- was 'quotum' -->
+            <xs:element ref="created" minOccurs="0"/>
+            <xs:element ref="changed" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- /user/$fav_user_id/favorites [GET] -->
+    <!-- alue must be either "ASSET" or "COLLECTION", returns AssetType or CollectionType -->
+    
+    
+    <!-- /user/create [POST] -->
+    <!-- don't know what this is about?! -->
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+            <request_result>success</request_result>
+            <request_result_id>601</request_result_id> 
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    
+    
+    
     
     <!-- /version [GET] -->
     <xs:complexType name="VersionType">
