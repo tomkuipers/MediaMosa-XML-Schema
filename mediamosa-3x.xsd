@@ -18,7 +18,7 @@
             - How to handle various 'id','app_id', 'userid', 'resultId' formats. Lets be consistent and use latest 'resultId' format?!
             - Elements 'owner' and 'owner_id' are both used. Please choose one. Previous remark change 'ownerd_id' -> 'ownerId'
             - Element 'value' isn't very desciptive, it's the value of what? 'value' is used as child of 'acl_app', is it actually an 'app_id'?
-            - Fix typo in requests to /autorisation/* REST calls. Should be spelled 'authorization'
+            - Fix typo in requests to /autorisation_group/* REST calls. Should be spelled 'authorization'
             - Rename element 'modified' to 'changed' (xs:dateTime) because this is been used more often in other elements in the schema.
             - We should provide an XML Schema for the VUF (video upload file) xml format.
             - Rename element 'quotum' to 'group_quota_mb'
@@ -2074,7 +2074,34 @@
         </xs:sequence>
     </xs:complexType>
     
-    <!--  -->
+    <!-- /login [GET] / [POST] -->
+    <!-- don't know what this is about?! -->
+    <xs:complexType name="__LoginType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item>
+                    DATA vpx 0 2541e50e009440742ea00f61fbf5b612
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+    
+    <!-- /login/cookie [GET] -->
+    <!-- don't know what this is about?! Dynamically generated XML elements, no schema can be defined!-->
+    <xs:complexType name="__LoginCookieType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <SESS84ff6063a88f1185a7aa>28b53dd9bd4e22922bccfc354</SESS84ff6063a88f1185a7aa>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+    
     
 
     <xs:complexType name="MediafileType">
