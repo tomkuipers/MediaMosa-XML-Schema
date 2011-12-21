@@ -21,6 +21,7 @@
             - Fix typo in requests to /autorisation/* REST calls. Should be spelled 'authorization'
             - Rename element 'modified' to 'changed' (xs:dateTime) because this is been used more often in other elements in the schema.
             - We should provide an XML Schema for the VUF (video upload file) xml format.
+            - Rename element 'quotum' to 'group_quota_mb'
         </xs:documentation>
     </xs:annotation>
     
@@ -126,7 +127,10 @@
     <xs:element name="hasformat"/><!-- used in 'qualified_dublin_core' is this a boolean, can prefix 'has' be dropped? -->
     <xs:element name="fps" type="xs:float"/>
     <xs:element name="granted" type="xs:boolean"/> 
+    <xs:element name="group_diskspace_used_mb" type="xs:int"/>
     <xs:element name="group_id"/><!-- I assumed this would be a string (token) not an int, right? -->
+    <xs:element name="group_over_quota" type="xs:boolean"/>
+    <xs:element name="group_quota_mb" type="xs:int"/>
     <xs:element name="height" type="xs:int"/>
     <xs:element name="hinted" type="xs:boolean"/><!-- was 'is_hinted' -->
     <xs:element name="hostname" type="xs:string"/>
@@ -1945,8 +1949,63 @@
     </xs:annotation>
     <!-- see remarks for call /asset/create [POST] -->
 
+    <!-- /group [GET] -->
+    <xs:complexType name="GroupType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <group_id>mygroup</group_id>
+                    <quotum>0</quotum>
+                    <created>2009-11-06 17:54:52</created>
+                    <changed>2008-07-17 13:54:42</changed>
+                </item>
+                <item id="2">
+                    <group_id>Simpletest test group</group_id>
+                    <quotum></quotum>
+                    <created>2008-09-03 12:24:42</created>
+                    <changed>2008-09-17 12:44:42</changed>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="group_id"/>
+            <xs:element ref="group_quota_mb" minOccurs="0"/><!-- was 'quotum', elsewhere element 'group_quota_mb' is used, optional? -->
+            <xs:element ref="created"/>
+            <xs:element ref="changed"/>
+        </xs:sequence>
+    </xs:complexType>
 
-
+    <!-- /group/$group_id [GET] -->
+    <xs:complexType name="GroupDetailsType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <app_quota_mb>10240000</app_quota_mb>
+                    <group_quota_mb>0</group_quota_mb>
+                    <app_diskspace_used_mb>8435543</app_diskspace_used_mb>
+                    <group_diskspace_used_mb>5843399</group_diskspace_used_mb>
+                    <quota_available_mb>1804457</quota_available_mb>
+                    <group_over_quota>false</group_over_quota>
+                    <created>2009-11-06 17:54:52</created>
+                    <changed>2008-07-17 13:54:42</changed>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="app_quota_mb"/>
+            <xs:element ref="group_quota_mb"/>
+            <xs:element ref="app_diskspace_used_mb"/>
+            <xs:element ref="group_diskspace_used_mb"/>
+            <xs:element ref="quota_available_mb"/>
+            <xs:element ref="group_over_quota"/>
+            <xs:element ref="created"/>
+            <xs:element ref="changed"/>
+        </xs:sequence>
+    </xs:complexType>
 
 
     <xs:complexType name="MediafileType">
