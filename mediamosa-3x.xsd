@@ -22,6 +22,7 @@
             - Rename element 'modified' to 'changed' (xs:dateTime) because this is been used more often in other elements in the schema.
             - We should provide an XML Schema for the VUF (video upload file) xml format.
             - Rename element 'quotum' to 'group_quota_mb'
+            - Rename various 'job_*' elements in /job/failures response (job_asset_id = asset_id, job_started = started)
         </xs:documentation>
     </xs:annotation>
     
@@ -1195,7 +1196,7 @@
         </xs:sequence>
     </xs:complexType>
     
-    <!-- /asset/$asset_id/joblist [GET] -->
+    <!-- /asset/$asset_id/joblist [GET] and /job/$job_id/status [GET] -->
     <xs:complexType name="JobDetailsType">
         <xs:annotation>
             <xs:documentation>
@@ -1280,6 +1281,21 @@
                     <started>17-06-2009 20:05</started>
                     <started_unix>1245261932</started_unix>
                     <error_description></error_description>
+                </item>
+                ]]>
+                
+                /job/$job_id/status [GET]
+                <![CDATA[
+                <item id="1">
+                    <id>2</id>
+                    <owner>testuser</owner>
+                    <status>FAILED</status>
+                    <progress>1.000</progress>
+                    <priority>0</priority>
+                    <job_type>ANALYSE</job_type>
+                    <started>12-04-2010 00:37</started>
+                    <started_unix>1271025432</started_unix>
+                    <error_description>File not found (/mnt/vpx/data/C/ChKULGlBh0T65P1MnPKsJhNG)</error_description>
                 </item>
                 ]]>
             </xs:documentation>
@@ -2007,6 +2023,59 @@
         </xs:sequence>
     </xs:complexType>
 
+    <!-- /job/failures [GET] -->
+    <xs:complexType name="JobFailureType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <response>
+                    <header>
+                        <item_count>1</item_count>
+                        <item_count_total>1</item_count_total>
+                        <item_offset>0</item_offset>
+                        <request_class>mediamosa_rest_call_job_failures</request_class>
+                        <request_matched_method>GET</request_matched_method>
+                        <request_matched_uri>/job/failures</request_matched_uri>
+                        <request_query_count>1</request_query_count>
+                        <request_result>success</request_result>
+                        <request_result_description/>
+                        <request_result_id>601</request_result_id>
+                        <request_uri>[GET] job/failures?user_id=admin&amp;is_app_admin=TRUE</request_uri>
+                        <version>3.0.7.1787</version>
+                        <request_process_time>0.0974</request_process_time>
+                    </header>
+                    <items>
+                        <item>
+                            <job_id>3292</job_id>
+                            <job_asset_id>A2OLRiXEdXNVUhORsqPluNJo</job_asset_id>
+                            <job_mediafile_id>wCH1VbUaRujdjZkXO5uoWnsk</job_mediafile_id>
+                            <job_app_id>14</job_app_id>
+                            <job_type>TRANSCODE</job_type>
+                            <job_started>2011-06-29 10:39:28</job_started>
+                            <job_modified>2011-06-29 10:39:25</job_modified>
+                            <job_filename>sample.wmv</job_filename>
+                            <job_error_description>Error: ffmpeg returned a non-zero exit code: 1</job_error_description>
+                        </item>
+                    </items> 
+                </response>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="job_id"/>
+            <xs:element ref="asset_id"/><!-- was 'job_asset_id'  -->
+            <xs:element ref="mediafile_id"/><!-- was 'job_mediafile_id' -->
+            <xs:element ref="app_id"/><!-- was 'job_app_id' -->
+            <xs:element ref="job_type"/>
+            <xs:element ref="started"/>
+            <xs:element ref="changed"/><!-- was 'job_modified' -->
+            <xs:element ref="filename"/><!-- was 'job_filename' -->
+            <xs:element ref="error_description"/><!-- was 'job_error_description' -->
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!--  -->
+    
 
     <xs:complexType name="MediafileType">
         <xs:sequence>
