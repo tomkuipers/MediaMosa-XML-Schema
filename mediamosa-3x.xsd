@@ -20,6 +20,7 @@
             - Element 'value' isn't very desciptive, it's the value of what? 'value' is used as child of 'acl_app', is it actually an 'app_id'?
             - Fix typo in requests to /autorisation/* REST calls. Should be spelled 'authorization'
             - Rename element 'modified' to 'changed' (xs:dateTime) because this is been used more often in other elements in the schema.
+            - We should provide an XML Schema for the VUF (video upload file) xml format.
         </xs:documentation>
     </xs:annotation>
     
@@ -75,6 +76,7 @@
     </xs:element>
     <xs:element name="asset_id" type="xs:token"/>
     <xs:element name="audio_codec" type="xs:string"/>
+    <xs:element name="batch_id" type="xs:int"/>
     <xs:element name="bitrate" type="xs:int"/>
     <xs:element name="bpp" type="xs:float"/>
     <xs:element name="build" type="xs:int"/>
@@ -100,6 +102,14 @@
     <xs:element name="downloadable" type="xs:boolean"/><!-- was 'is_downloadable' -->
     <xs:element name="ega_still_url" type="xs:anyURI"/><!-- is the 'ega_' prefix meaningfull? -->
     <xs:element name="ega_view_url" type="xs:anyURI"/><!-- is the 'ega_' prefix meaningfull? -->
+    <xs:element name="email_address">
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:pattern value="[^@]+@[^\.]+\..+"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:element name="email_contents" type="xs:string"/>
     <xs:element name="empty_asset" type="xs:boolean"/><!-- was 'is_empty_asset' -->
     <xs:element name="error_description" type="xs:string"/>
     <xs:element name="error_id" type="xs:int"/>
@@ -109,6 +119,7 @@
     <xs:element name="file_extension" type="xs:string"/>
     <xs:element name="filename" type="xs:string"/>
     <xs:element name="filesize" type="xs:int"/><!-- what is the unit used, shouldn't this be 'filesize_mb'? -->
+    <xs:element name="finished" type="xs:dateTime"/>
     <xs:element name="format" type="xs:string"/><!-- is this a string? -->
     <xs:element name="format_medium"/><!-- used in 'qualified_dublin_core' is this a string? -->
     <xs:element name="format_extent"/><!-- used in 'qualified_dublin_core' is this a string? -->
@@ -220,7 +231,7 @@
     <xs:element name="type" type="xs:string"/><!-- 'type' in 'dublin_core' string, or enumeration, fixed set of types? required or optional -->
     <xs:element name="unappropriate" type="xs:boolean"/><!-- was 'is_unappropiate'/'is_unappropriate' -->
     <xs:element name="uploadprogress_url" type="xs:anyURI"/>
-    <xs:element name="userId" type=""/><!-- was 'userid' -->
+    <xs:element name="userId" type="xs:string"/><!-- was 'userid' -->
     <xs:element name="uri" type="xs:anyURI"/>
     <xs:element name="version" type="xs:string"/>
     <xs:element name="video_codec" type="xs:string"/>
@@ -229,6 +240,7 @@
     <xs:element name="view_asset_url" type="xs:anyURI"/>
     <xs:element name="viewed" type="xs:int"/><!-- restriction minInclusive 0, or just empty when never watched? -->
     <xs:element name="vpx_still_url" type="xs:anyURI"/><!-- is the 'vpx_' prefix meaningfull? -->
+    <xs:element name="vuf" type="xs:string"/>
     <xs:element name="width" type="xs:int"/>
     
     <xs:complexType name="HeaderType">
@@ -1789,7 +1801,7 @@
         </xs:sequence>
     </xs:complexType>
     
-    <!-- /ftp [GET] -->
+    <!-- /ftp [GET] and /ftp/$user [GET] -->
     <xs:complexType name="FtpUserType">
         <xs:annotation>
             <xs:documentation>
@@ -1808,6 +1820,130 @@
             <xs:element ref="changed"/><!-- was 'modified' but 'changed' is used more often -->
         </xs:sequence>
     </xs:complexType>
+
+    <!-- /ftp_batch [GET] and /ftp_batch/$batch_id [GET] -->
+    <xs:complexType name="FtpBatchType">
+        <xs:annotation>
+            <xs:documentation>
+                /ftp_batch [GET]
+                <![CDATA[
+                <item id="1">
+                    <batch_id>1</batch_id>
+                    <owner_id>foofoofoo</owner_id>
+                    <group_id></group_id>
+                    <vuf>/mnt/naspcd1/vpx-acc/ftp/foofoofoo001/transcoding_7-2.vuf</vuf>
+                    <started>2009-05-20 11:59:21</started>
+                    <finished>2009-05-20 11:59:23</finished>
+                    <email_address>someone@somewhere.com</email_address>
+                </item>
+                <item id="2">
+                    <batch_id>17</batch_id>
+                    <owner_id>foofoofoo</owner_id>
+                    <group_id></group_id>
+                    <vuf>/mnt/naspcd1/vpx-acc/ftp/foofoofoo001/test.vuf</vuf>
+                    <started>2009-10-06 12:14:29</started>
+                    <finished>2009-10-06 12:14:30</finished>
+                    <email_address>someone@somewhere.com</email_address>
+                </item>
+                <item id="3">
+                    <batch_id>35</batch_id>
+                    <owner_id>foofoofoo</owner_id>
+                    <group_id></group_id>
+                    <vuf>//mnt/naspcd1/vpx-acc/ftp/foofoofoo001/test.vuf</vuf>
+                    <started>2009-10-12 16:38:32</started>
+                    <finished>2009-10-12 16:38:33</finished>
+                    <email_address>someone@somewhere.com</email_address>
+                </item>
+                <item id="4">
+                    <batch_id>36</batch_id>
+                    <owner_id>foofoofoo</owner_id>
+                    <group_id></group_id>
+                    <vuf>/mnt/naspcd1/vpx-acc/ftp/foofoofoo001/test.vuf</vuf>
+                    <started>2009-10-12 16:59:54</started>
+                    <finished>2009-10-12 16:59:56</finished>
+                    <email_address>someone@somewhere.com</email_address>
+                </item>
+                <item id="5">
+                    <batch_id>37</batch_id>
+                    <owner_id>foofoofoo</owner_id>
+                    <group_id></group_id>
+                    <vuf>/mnt/naspcd1/vpx-acc/ftp/foofoofoo001/test.vuf</vuf>
+                    <started>2009-10-12 17:03:44</started>
+                    <finished>2009-10-12 17:03:45</finished>
+                    <email_address>someone@somewhere.com</email_address>
+                </item>
+                ]]>
+                
+                /ftp_batch/$batch_id [GET]
+                <![CDATA[
+                <item id="1">
+                    <batch_id>1</batch_id>
+                    <app_id>1</app_id>
+                    <owner_id>foofoofoo</owner_id>
+                    <group_id></group_id>
+                    <vuf>/mnt/naspcd1/vpx-acc/ftp/foofoofoo001/transcoding_7-2.vuf</vuf>
+                    <started>2009-05-20 11:59:21</started>
+                    <finished>2009-05-20 11:59:23</finished>
+                    <email_address>someone@somewhere.com</email_address>
+                    <email_contents>Handling video with reference ID misc_007_transcoding_2
+                        Handling video with reference ID misc_007_transcoding_2
+                        New asset ID: SzMEqYPIiIZZUnR7kGzVG5LX
+                        New mediafile ID: S7YrGbmIeZ4M36eTuLF03RfQ
+                    </email_contents>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="batch_id"/>
+            <xs:element ref="owner_id"/>
+            <xs:element ref="group_id"/>
+            <xs:element ref="vuf"/>
+            <xs:element ref="started"/>
+            <xs:element ref="finished"/>
+            <xs:element ref="email_address"/>
+            <xs:element ref="email_contents" minOccurs="0"/><!-- optional element because only present when retrieving details of specific batch -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- /ftp_batch/$batch_id/assets [GET] -->
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+            <item id="1">
+                <asset_id>10KkoxGpjIbQIgp5LklENOcg</asset_id>
+            </item>
+            <item id="2">
+                <asset_id>1dH0tJyJDbdvEZpeoXt9JwuW</asset_id>
+            </item>
+            <item id="3">
+                <asset_id>1GFEV2FX4RTshl9PgJjvTqTD</asset_id>
+            </item>
+            <item id="4">
+                <asset_id>1grFyZeSGL0D1oCYAgeoFNNP</asset_id>
+            </item>
+            <item id="5">
+                <asset_id>1gUC7D0233sWihfHTNUU6YKu</asset_id>
+            </item>
+            <item id="6">
+                <asset_id>1O8jShEt16vaZkaCJwdX9UgL</asset_id>
+            </item>
+            <item id="7">
+                <asset_id>2BcRpKCfNfrSKlvfgsayCmAc</asset_id>
+            </item>
+            <item id="8">
+                <asset_id>2ImQhkKfH9KmsxeaWuKoKFMt</asset_id>
+            </item>
+            <item id="9">
+                <asset_id>303odyfYtC0pHmQ0iAzcVvDz</asset_id>
+            </item>
+            <item id="10">
+                <asset_id>3HHdyr0L0bwBRWLRhDsbaLLH</asset_id>
+            </item>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <!-- see remarks for call /asset/create [POST] -->
 
 
 
