@@ -189,6 +189,7 @@
     <xs:element name="play_restriction_end" type="xs:dateTime"/>
     <xs:element name="played" type="xs:int"/><!-- restriction minInclusive 0, or just empty when never watched? -->
     <xs:element name="private" type="xs:boolean"/><!-- is_private, isprivate or private (my vote) be consequent, drop prefix 'is' -->
+    <xs:element name="preview_profile_id" type="xs:int"/>
     <xs:element name="priority" type="xs:int"/>
     <xs:element name="profile" type="xs:string"/>
     <xs:element name="profile_id" type="xs:int"/>
@@ -2410,7 +2411,7 @@
     </xs:complexType>
     
     <!-- /transcode/profile/$profile_id [GET] -->
-    <xs:complexType name="">
+    <xs:complexType name="___ProfileType">
         <xs:annotation>
             <xs:documentation>
                 /transcode/profile/1
@@ -2450,6 +2451,37 @@
         </xs:sequence>
     </xs:complexType>
     
+    <!-- /transcode/profile/create [POST] -->
+    <xs:complexType name="__ProfileType"><!-- change this typename! all /create request return similar response, use a generic ObjectType?! -->
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <profile_id>11</profile_id>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="profile_id"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!--  /transcode/profile/default [GET] -->
+    <xs:complexType name="PreviewProfileType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <preview_profile_id>1</preview_profile_id>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="preview_profile_id"/>
+        </xs:sequence>
+    </xs:complexType>
     
     <!-- /user/$user_id/joblist [GET] -->
     <xs:complexType name="JoblistType">
