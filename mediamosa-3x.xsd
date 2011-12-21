@@ -23,6 +23,7 @@
             - We should provide an XML Schema for the VUF (video upload file) xml format.
             - Rename element 'quotum' to 'group_quota_mb' (quotum is child element for /group and /user REST calls)
             - Rename various 'job_*' elements in /job/failures response (job_asset_id = asset_id, job_started = started)
+            - Don't know what type of values to expect inchild elements 'allowed_value' and 'default_value' in /transcode/parameter response
         </xs:documentation>
     </xs:annotation>
     
@@ -55,6 +56,7 @@
     </xs:element>
     <xs:element name="action" type="xs:anyURI"/>
     <xs:element name="active" type="xs:boolean"/>
+    <xs:element name="allowed_value"/><!-- used in /trancode/parameter, don't know what type int, string, boolean? -->
     <xs:element name="app_id">
         <xs:simpleType>
             <xs:restriction base="xs:int">
@@ -93,11 +95,14 @@
     <xs:element name="container_type" type="xs:string"/>
     <xs:element name="content_type" type="xs:string"/><!-- string value? -->
     <xs:element name="contributor" type="xs:string"/>
+    <xs:element name="count" type="xs:int"/>
     <xs:element name="coverage_spatial"/><!-- used in 'dublin_core', is this a string? -->
     <xs:element name="coverage_temporal"/><!-- used in 'dublin_core', is this a string? -->
     <xs:element name="created" type="xs:dateTime"/>
     <xs:element name="creator" type="xs:string"/>
     <xs:element name="date" type="xs:dateTime"/>
+    <xs:element name="default" type="xs:boolean"/>
+    <xs:element name="default_value"/>
     <xs:element name="description" type="xs:string"/>
     <xs:element name="description_abstract" type="xs:string"/>
     <xs:element name="download_url" type="xs:anyURI"/>
@@ -127,6 +132,7 @@
     <xs:element name="format_extent"/><!-- used in 'qualified_dublin_core' is this a string? -->
     <xs:element name="hasformat"/><!-- used in 'qualified_dublin_core' is this a boolean, can prefix 'has' be dropped? -->
     <xs:element name="fps" type="xs:float"/>
+    <xs:element name="global" type="xs:boolean"/>
     <xs:element name="granted" type="xs:boolean"/> 
     <xs:element name="group_diskspace_used_mb" type="xs:int"/>
     <xs:element name="group_id"/><!-- I assumed this would be a string (token) not an int, right? -->
@@ -166,7 +172,10 @@
     <xs:element name="message" type="xs:string"/>
     <xs:element name="metadata" type="MetadataType"/>
     <xs:element name="mime_type" type="xs:string"/>
+    <xs:element name="min_value" type="xs:int"/>
+    <xs:element name="max_value" type="xs:int"/>
     <xs:element name="name" type="xs:string"/>
+    <xs:element name="nice_parameter" type="xs:string"/>
     <xs:element name="numofvideos" type="xs:long"/>
     <xs:element name="oai_prefix" type="xs:string"/><!-- string value? -->
     <xs:element name="oai_namespaceuri" type="xs:string"/><!-- string value or anyUri? -->
@@ -181,6 +190,8 @@
     <xs:element name="played" type="xs:int"/><!-- restriction minInclusive 0, or just empty when never watched? -->
     <xs:element name="private" type="xs:boolean"/><!-- is_private, isprivate or private (my vote) be consequent, drop prefix 'is' -->
     <xs:element name="priority" type="xs:int"/>
+    <xs:element name="profile" type="xs:string"/>
+    <xs:element name="profile_id" type="xs:int"/>
     <xs:element name="progress" type="xs:float"/>
     <xs:element name="progress_id" type="xs:int"/><!-- is there a maximun value for this, e.g. more than int maxinclusive 2147483647  -->
     <xs:element name="protected"><!-- was 'is_protected' , example response is string! value 'DOMAIN_REALM' (enumeration?) -->
@@ -204,6 +215,7 @@
     </xs:element>
     <xs:element name="reference_id" type="xs:token"/><!-- not sure what to expect here, assumed a string value -->
     <xs:element name="relation"/><!-- used in 'dublin_core', is this a string? -->
+    <xs:element name="required" type="xs:boolean"/>
     <xs:element name="result" type="xs:string"/>
     <xs:element name="resultDescription" type="xs:string"/>
     <xs:element name="resultId" type="xs:int"/>
@@ -231,7 +243,9 @@
     <xs:element name="title" type="xs:string"/>
     <xs:element name="title_alternative" type="xs:string"/>
     <xs:element name="tool" type="xs:string"/>
+    <xs:element name="tool_parameter" type="xs:string"/>
     <xs:element name="transcode_inherits_acl" type="xs:boolean"/>
+    <xs:element name="transcode_mapping_id" type="xs:int"/>
     <xs:element name="transcode_profile_id" type="xs:int"/>
     <xs:element name="type" type="xs:string"/><!-- 'type' in 'dublin_core' string, or enumeration, fixed set of types? required or optional -->
     <xs:element name="unappropriate" type="xs:boolean"/><!-- was 'is_unappropiate'/'is_unappropriate' -->
@@ -2125,6 +2139,31 @@
         </xs:annotation>
     </xs:complexType>
     
+    <!-- /mediafile/$mediafile_id/uploadticket/create [POST] -->
+    <xs:complexType name="UploadTicketType">
+        <xs:annotation>
+            <xs:documentation>
+                /mediafile/$mediafile_id/uploadticket/create [POST]
+                <![CDATA[
+                <item id="1">
+                    <action>http://upload.mediamosa.local/mediafile/upload?upload_ticket=F1LVMTUCNi5kjXNbHMZPFwzD&X-Progress-ID=12345</action>
+                    <uploadprogress_url>http://upload.mediamosa.local/mediafile/uploadprogress?id=12345</uploadprogress_url>
+                    <ticket_id>8474096 Z1ZmZMMNhLHIfGj9cgSvAd2R</ticket_id>
+                    <progress_id>1234567</progress_id>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="action"/>
+            <xs:element ref="uploadprogress_url"/>
+            <xs:element ref="ticket_id"/>
+            <xs:element ref="progress_id"/>
+        </xs:sequence>
+        
+    </xs:complexType>
+    
+    
     
 
     <xs:complexType name="MediafileType">
@@ -2293,6 +2332,125 @@
         </xs:attribute>
     </xs:complexType>
     
+    
+    <!-- /tagcount [GET] -->
+    <xs:complexType name="TagCountType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <count>6</count>
+                    <tag>en</tag>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="count"/>
+            <xs:element ref="tag"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- /transcode/parameter [GET] -->
+    <xs:complexType name="ParameterType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <transcode_mapping_id>1</transcode_mapping_id>
+                    <tool>ffmpeg</tool>
+                    <nice_parameter>videobitrate</nice_parameter>
+                    <tool_parameter>-b</tool_parameter>
+                    <min_value>128000</min_value>
+                    <max_value>800000</max_value>
+                    <allowed_value></allowed_value>
+                    <default_value>200000</default_value>
+                    <required>FALSE</required>
+                    <created>2010-04-07 12:39:03</created>
+                    <changed>2010-04-07 12:39:03</changed>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="transcode_mapping_id"/>
+            <xs:element ref="tool"/>
+            <xs:element ref="nice_parameter"/>
+            <xs:element ref="tool_parameter"/>
+            <xs:element ref="min_value"/>
+            <xs:element ref="max_value"/>
+            <xs:element ref="allowed_value"/><!-- what type? int, string, boolean? should it be (boolean) 'allowed' -->
+            <xs:element ref="default_value"/>
+            <xs:element ref="required"/>
+            <xs:element ref="created"/>
+            <xs:element ref="changed"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- /transcode/profile [GET] -->
+    <xs:complexType name="ProfileType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <profile_id>1</profile_id>
+                    <profile>standaard flash</profile>
+                    <default>FALSE</default>
+                    <global>TRUE</global>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="profile_id"/>
+            <xs:element ref="profile"/>
+            <xs:element ref="default"/>
+            <xs:element ref="global"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- /transcode/profile/$profile_id [GET] -->
+    <xs:complexType name="">
+        <xs:annotation>
+            <xs:documentation>
+                /transcode/profile/1
+                <![CDATA[
+                <item id="1">
+                    <nid>1</nid>
+                    <vid>42</vid>
+                    <transcode_profile_id>1</transcode_profile_id>
+                    <app_id>0</app_id>
+                    <version>0</version>
+                    <profile>standaard flash</profile>
+                    <is_default_profile>FALSE</is_default_profile>
+                    <tool>ffmpeg</tool>
+                    <file_extension>flv</file_extension>
+                    <command>videobitrate:500000;fps:25;size:320x200;videocodec:flv;audiocodec:libmp3lame;audiobitrate:64000;audiosamplingrate:22050;audiochannels:1;maintain_aspect_ratio:yes;padding:no</command>
+                    <created>2010-04-07 13:37:31</created>
+                    <changed>2010-04-07 13:37:31</changed>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <!-- don't know what this is? same as profile_id (=1 in request) why not call it profile_id,duplicate for element 'transcode_profile_id' -->
+            <xs:element ref="nid"/>
+            <!-- don't know what this is?! -->
+            <xs:element ref="vid"/>
+            <xs:element ref="profile_id"/><!-- was 'transcode_profile_id' -->
+            <xs:element ref="app_id"/><!-- value '0' does it mean it is actually empty element (and optional)? -->
+            <xs:element ref="version"/><!-- value '0' does it mean it is actually empty element (and optional)? -->
+            <xs:element ref="profile"/>
+            <xs:element ref="default"/><!-- was 'is_default_profile' (boolean 'default' used in /transcode/profile [GET] request) -->
+            <xs:element ref="tool"/>
+            <xs:element ref="file_extension"/>
+            <xs:element ref="command"/>
+            <xs:element ref="created"/>
+            <xs:element ref="changed"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    
     <!-- /user/$user_id/joblist [GET] -->
     <xs:complexType name="JoblistType">
         <xs:annotation>
@@ -2326,30 +2484,6 @@
         </xs:sequence>
     </xs:complexType>
     
-    <!-- /mediafile/$mediafile_id/uploadticket/create [POST] -->
-    <xs:complexType name="UploadTicketType">
-        <xs:annotation>
-            <xs:documentation>
-                /mediafile/$mediafile_id/uploadticket/create [POST]
-                <![CDATA[
-                <item id="1">
-                    <action>http://upload.mediamosa.local/mediafile/upload?upload_ticket=F1LVMTUCNi5kjXNbHMZPFwzD&X-Progress-ID=12345</action>
-                    <uploadprogress_url>http://upload.mediamosa.local/mediafile/uploadprogress?id=12345</uploadprogress_url>
-                    <ticket_id>8474096 Z1ZmZMMNhLHIfGj9cgSvAd2R</ticket_id>
-                    <progress_id>1234567</progress_id>
-                </item>
-                ]]>
-            </xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-            <xs:element ref="action"/>
-            <xs:element ref="uploadprogress_url"/>
-            <xs:element ref="ticket_id"/>
-            <xs:element ref="progress_id"/>
-        </xs:sequence>
-        
-    </xs:complexType>
-    
     <!-- /user [GET] -->
     <xs:complexType name="UserType">
         <xs:annotation>
@@ -2375,11 +2509,21 @@
     </xs:complexType>
     
     <!-- /user/$fav_user_id/favorites [GET] -->
-    <!-- alue must be either "ASSET" or "COLLECTION", returns AssetType or CollectionType -->
+    <!-- value must be either "ASSET" or "COLLECTION", returns AssetType or CollectionType -->
     
+    <!-- /user/$user_id/delete [POST] -->
+    <!-- fragment from header, empty items element -->
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+            <request_result>success</request_result>
+            <request_result_id>601</request_result_id>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
     
     <!-- /user/create [POST] -->
-    <!-- don't know what this is about?! -->
+    <!-- fragment from header, empty items element -->
     <xs:annotation>
         <xs:documentation>
             <![CDATA[
@@ -2387,10 +2531,7 @@
             <request_result_id>601</request_result_id> 
             ]]>
         </xs:documentation>
-    </xs:annotation>
-    
-    
-    
+    </xs:annotation>    
     
     <!-- /version [GET] -->
     <xs:complexType name="VersionType">
