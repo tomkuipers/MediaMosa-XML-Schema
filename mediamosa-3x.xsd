@@ -120,7 +120,9 @@
     <xs:element name="empty_asset" type="xs:boolean"/><!-- was 'is_empty_asset' -->
     <xs:element name="error_description" type="xs:string"/>
     <xs:element name="error_id" type="xs:int"/>
+    <xs:element name="exceptions" type="xs:int"/>
     <xs:element name="external" type="xs:boolean"/><!--  was 'is_external' -->
+    <xs:element name="fails" type="xs:int"/>
     <xs:element name="favorite" type="xs:boolean"/><!-- was 'is_favorite' -->
     <xs:element name="file_duration" type="xs:time"/>
     <xs:element name="file_extension" type="xs:string"/>
@@ -158,6 +160,7 @@
         </xs:simpleType>
     </xs:element>
     <xs:element name="language" type="xs:language"/>
+    <xs:element name="last_run" type="xs:dateTime"/>
     <xs:element name="license"/><!-- used in 'qualified_dublin_core' is this a string? -->
     <xs:element name="mediafile_duration" type="xs:time"/>
     <xs:element name="mediafile_container_type" type="xs:string"/>
@@ -184,6 +187,7 @@
     <xs:element name="output" type="xs:string"/>
     <xs:element name="owner" type="xs:string"/>
     <xs:element name="owner_id" type="xs:string"/>
+    <xs:element name="passes" type="xs:int"/>
     <xs:element name="play_proxy_url" type="xs:anyURI"/>
     <xs:element name="play_restriction_start" type="xs:dateTime"/>
     <xs:element name="play_restriction_end" type="xs:dateTime"/>
@@ -240,7 +244,10 @@
     <xs:element name="supplement_id" type="xs:token"/><!-- or token (xs:MNTOKEN) -->
     <xs:element name="supplement_base64" type="xs:base64Binary"/>
     <xs:element name="tag" type="xs:string"/><!-- not sure what to expect here, assumed a string value -->
+    <xs:element name="test" type="xs:string"/>
+    <xs:element name="test_description" type="xs:string"/>
     <xs:element name="ticket_id" type="xs:token"/>
+    <xs:element name="timestamp" type="xs:dateTime"/>
     <xs:element name="title" type="xs:string"/>
     <xs:element name="title_alternative" type="xs:string"/>
     <xs:element name="tool" type="xs:string"/>
@@ -248,6 +255,7 @@
     <xs:element name="transcode_inherits_acl" type="xs:boolean"/>
     <xs:element name="transcode_mapping_id" type="xs:int"/>
     <xs:element name="transcode_profile_id" type="xs:int"/>
+    <xs:element name="ttr" type="xs:decimal"/>
     <xs:element name="type" type="xs:string"/><!-- 'type' in 'dublin_core' string, or enumeration, fixed set of types? required or optional -->
     <xs:element name="unappropriate" type="xs:boolean"/><!-- was 'is_unappropiate'/'is_unappropriate' -->
     <xs:element name="uploadprogress_url" type="xs:anyURI"/>
@@ -2165,8 +2173,6 @@
     </xs:complexType>
     
     
-    
-
     <xs:complexType name="MediafileType">
         <xs:sequence>
             <!-- didn't define 'mediafile_id' since we use an attribute for that -->
@@ -2333,7 +2339,164 @@
         </xs:attribute>
     </xs:complexType>
     
+    <!-- /rest [GET] -->
+    <xs:complexType name="RestCallType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <access>5</access>
+                    <behave_as_external></behave_as_external>
+                    <class_name>mediamosa_rest_call_asset_search</class_name>
+                    <default_params_values>
+                        <app_id>0</app_id>
+                    </default_params_values>
+                    <method>GET</method>
+                    <module_name>mediamosa_asset</module_name>
+                    <response_type>text/xml</response_type>
+                    <status>active</status>
+                    <uri>asset</uri>
+                    <uri_id>1</uri_id>
+                    <version>1.1.0</version>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="access"/><!-- what kind of id is this? -->
+            <xs:element ref="behave_as_external"/>
+            <xs:element ref="class_name"/>
+            <xs:element ref="default_params_value"/>
+            <xs:element ref="method"/>
+            <xs:element ref="module_name"/>
+            <xs:element ref="response_type"/>
+            <xs:element ref="status"/>
+            <xs:element ref="uri"/>
+            <xs:element ref="uri_id"/><!-- what kind of id is this? -->
+            <xs:element ref="version"/>
+        </xs:sequence>
+    </xs:complexType>
     
+    <!-- /rest/$uri_id [GET] -->
+    <xs:complexType name="___">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <access>5</access>
+                    <behave_as_external></behave_as_external>
+                    <class_name>mediamosa_rest_call_acl_group_get</class_name>
+                    <method>GET</method>
+                    <module_name>mediamosa_acl</module_name>
+                    <response_type>text/xml</response_type>
+                    <status>active</status>
+                    <uri>autorisation_group/$groupname</uri>
+                    <uri_id>33</uri_id>
+                    <version>1.1.0</version>
+                    <vars>
+                        <groupname>
+                            <type>STRING</type>
+                            <is_required>YES</is_required>
+                            <description>The group name to retrieve</description>
+                        </groupname>
+                        <app_id>
+                            <type>APP_ID</type>
+                            <is_required>YES</is_required>
+                            <is_array>YES</is_array>
+                            <default_value>0</default_value>
+                            <description>The application ID.</description>
+                        </app_id>
+                        <is_app_admin>
+                            <type>BOOL</type>
+                            <is_required>NO</is_required>
+                            <description>NOT USED.</description>
+                            <default_value>false</default_value>
+                        </is_app_admin>
+                    </vars>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+    
+    <!-- /services/oembed [GET] -->
+    <!-- XML type response missing in example -->
+    
+    <!-- /simpletest [GET] -->
+    <xs:complexType name="SimpletestType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <test>Challenge-reponse authentication</test>
+                    <test_description>Challenge-reponse authentication for end user applications.</test_description>
+                    <passes>35</passes>
+                    <fails>0</fails>
+                    <exceptions>0</exceptions>
+                    <last_run>2010-04-08 13:11:25</last_run>
+                    <ttr>35.18</ttr>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="test"/>
+            <xs:element ref="test_description"/>
+            <xs:element ref="passes"/>
+            <xs:element ref="fails"/>
+            <xs:element ref="exceptions"/>
+            <xs:element ref="last_run"/>
+            <xs:element ref="ttr"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- /statistics/dataupload [GET] -->
+    <xs:complexType name="">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <app_id>14</app_id>
+                    <owner_id>admin</owner_id>
+                    <group_id></group_id>
+                    <file_size>993480</file_size>
+                    <timestamp>2010-01-22 16:22:54</timestamp>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="app_id"/>
+            <xs:element ref="owner_id"/>
+            <xs:element ref="group_id"/>
+            <xs:element ref="filesize"/><!-- was 'file_size' -->
+            <xs:element ref="timestamp"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    
+    <!-- /status [GET] -->
+    <!-- response is empty <items/> details in <header> element?!  -->
+    
+    <!-- /still/$still_id/watermark [POST] -->
+    <xs:complexType name="StillType"><!-- maybe this can be done generic, similar response in other /create and /update calls -->
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <item id="1">
+                    <still_id>OW35AQyoPNUSi4iINunmS2nr</still_id>
+                </item>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="still_id"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- /still/$still_prefix/$still_id [GET] -->
+    <!-- don't know what this is about?! no examples, variables mismatch -->
+     
     <!-- /tagcount [GET] -->
     <xs:complexType name="TagCountType">
         <xs:annotation>
