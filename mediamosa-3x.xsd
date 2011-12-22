@@ -4,6 +4,7 @@
     <!-- targetNamespace="http://mediamosa.org/schemas/3.0" -->
     <xs:annotation>
         <xs:documentation>
+            PLEASE NOTE: XML fragments in documentation represent CURRENT situation as found on http://mediamosa.org/api/mediamosa-30
             Draft version of XML Schema for MediaMosa 3.x desired output, Tom Kuipers 
             Make this available online at http://mediamosa.org/schemas/3.0/mediamosa.xsd
             - minOccurs = 0 means optional. Default is 1 - maxOccurs = number of occurences.
@@ -21,9 +22,10 @@
             - Fix typo in requests to /autorisation_group/* REST calls. Should be spelled 'authorization'
             - Rename element 'modified' to 'changed' (xs:dateTime) because this is been used more often in other elements in the schema.
             - We should provide an XML Schema for the VUF (video upload file) xml format.
-            - Rename element 'quotum' to 'group_quota_mb' (quotum is child element for /group and /user REST calls)
+            - Rename element 'quotum' to 'group_quota_mb' (quotum is child element for /group and /user REST calls) (quotum is Dutch quota is English)
             - Rename various 'job_*' elements in /job/failures response (job_asset_id = asset_id, job_started = started)
             - Don't know what type of values to expect inchild elements 'allowed_value' and 'default_value' in /transcode/parameter response
+            - Both 'filesize' and 'file_size' are being used, choose one.
         </xs:documentation>
     </xs:annotation>
     
