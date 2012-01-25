@@ -1,7 +1,7 @@
 
 ELEMENT		TYPE		VALUE			COMMENT
 -------		----		-----			-------
-		xs:dateTime	YYYY-mm-ddThh:mi:ss	add 'T' between date and time part, currently a space (' ') is used
+		xs:dateTime	YYYY-mm-ddThh:mi:ss	add 'T' between date and time part, currently a space (' ') is used + timezone
 		xs:boolean	true/false		lowercase, currently TRUE/FALSE is used
 
 
@@ -23,10 +23,29 @@ Dat het om een boolean gaat wordt in het schema vastgelegd (type='xs:boolean') d
 Er komen verschillende formaten id-achtige elementen voor. Die wil ik gelijktrekken. Nu zijn er bijvoorbeeld 'id', 'app_id' (underscore), 'userid' (aan elkaar), 'resultId' (camelCase).
 In de 3.0.0 respone wordt in de header 'resultId' gebruikt, zullen we de andere "id"'s ook zo vormgeven?
 
+Besluit: elementen met 'id' worden met underscore gedaan: result_id, owner_id
+
 Daarnaast worden 'owner' en 'owner_id' allebij gebruikt voor hetzeflde doel. Vervalt 'owner' en wordt 'owner_id' -> ownerId?
 
 Er komen ook wat dubbelingen voor, bijvoorbeeld 'filesize' en 'file_size'. 
-Verder bestaan 'file_duration', 'file_extension', maar ook 'filename'. Kiezen we voor 'file_size'? 
+Verder bestaan 'file_duration', 'file_extension', maar ook 'filename'. We kiezen voor 'file_size' en file_name? YES
 Dan meteen de vraag moet er bij 'file_size' een extensie '_mb' achter. Bij 'app_quota_mb', 'app_diskspace_used_mb', 'group_quota_mb' wordt dat wel gedaan namelijk.
 Wat is de eenheid die gebruikt wordt voor het uitdrukken van disk en filesizes? 
 Moeten we daar een algemene opmerking over maken, en kunnen we dan de '_mb' weglaten.
+
+
+/login/cookie
+
+<items>
+  <item id="1">
+    <SESS84ff6063a88f1185a7aa>28b53dd9bd4e22922bccfc354</SESS84ff6063a88f1185a7aa>
+  </item>
+</items>
+
+
+/ftp en /ftp/$user
+element 'modified' naar 'changed'
+
+'item' element wijzigen naar asset, job, mediafile etc afhankelijk van rest call.
+
+Unit test om in PHP validatie van XML tegen XSD schema te doen. Voorbeeld: http://forums.devshed.com/xml-programming-19/validating-xml-against-xsd-with-php-430794.html of http://php.net/manual/en/domdocument.schemavalidate.php
